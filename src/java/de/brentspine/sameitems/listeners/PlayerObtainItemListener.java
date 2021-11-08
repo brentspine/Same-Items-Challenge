@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -69,7 +70,19 @@ public class PlayerObtainItemListener implements Listener {
                         livesTookFrom.put(damager, new HashMap<>());
                         lives.put(damager, livesTookFrom.get(player.getName()).get(damager) + lives.get(damager));
                     }
-                    player.sendMessage(Main.PREFIX + "§9" + damager + "§7 wurden alle Leben zurückgegeben die ihm von §9" + player.getName() + "§7 abgezogen wurden");
+                    ArrayList<Material> arrayList = new ArrayList<>();
+                    for(Material material : obtainedItems.keySet()) {
+                        arrayList.add(material);
+                    }
+                    for(Material material : arrayList) {
+                        if(obtainedItems.get(material) == player.getName()) {
+                            obtainedItems.remove(material);
+                        }
+                    }
+                    for(Player current : Bukkit.getOnlinePlayers()) {
+                        current.sendMessage(Main.PREFIX + "§9" + damager + "§7 wurden alle Leben zurückgegeben die ihm von §9" + player.getName() + "§7 abgezogen wurden und alle von §9" + player.getName() + "§7 eingesammelten Items wurden freigegeben");
+                        //current.sendMessage(Main.PREFIX + "Es wurden alle von §9" + player.getName() + "§7 eingesammelten Items freigegeben");
+                    }
                 }
             }
             return;
