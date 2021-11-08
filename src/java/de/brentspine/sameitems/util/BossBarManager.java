@@ -38,9 +38,14 @@ public class BossBarManager {
                         }
                         bars.put(player.getName(), bar);
                     }
+                    boolean dead = true;
                     String title = "§4§l";
                     for (int i = 0; i < PlayerObtainItemListener.lives.get(player.getName()); i++) {
                         title = title + "♥";
+                        dead = false;
+                    }
+                    if(dead) {
+                        title = "§4§lDu bist ausgeschieden";
                     }
                     bars.get(player.getName()).setTitle(title);
                 }
