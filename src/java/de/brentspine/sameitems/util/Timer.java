@@ -58,31 +58,39 @@ public class Timer {
 
     public void sendActionBar() {
 
+        TextComponent message = getFormattedTime();
+
         for(Player player : Bukkit.getOnlinePlayers()) {
 
-            if(!isRunning() ) {
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED.toString() +
-                        ChatColor.BOLD + "Der Timer ist pausiert"));
-            } else {
-                convertInput();
-                if(days > 0)
-                    if(hours > 0)
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GOLD.toString() +
-                                ChatColor.BOLD + convertedDays + ChatColor.GOLD + ChatColor.BOLD + convertedHours + ":" + convertedMinutes + convertedSeconds));
-                    else
-                        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GOLD.toString() +
-                                ChatColor.BOLD + convertedDays + ChatColor.GOLD + ChatColor.BOLD + convertedMinutes + convertedSeconds));
-                else if(hours > 0)
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GOLD.toString() +
-                            ChatColor.BOLD + convertedHours + ":" + convertedMinutes + convertedSeconds));
-                else
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.GOLD.toString() +
-                            ChatColor.BOLD + convertedMinutes + convertedSeconds));
-            }
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
         }
 
     }
 
+
+    public TextComponent getFormattedTime() {
+        TextComponent message = new TextComponent("§c§lLoading...");
+        if(!isRunning() ) {
+            message = new TextComponent(ChatColor.RED.toString() +
+                    ChatColor.BOLD + "Der Timer ist pausiert");
+        } else {
+            convertInput();
+            if(days > 0)
+                if(hours > 0)
+                    message = new TextComponent(ChatColor.GOLD.toString() +
+                            ChatColor.BOLD + convertedDays + ChatColor.GOLD + ChatColor.BOLD + convertedHours + ":" + convertedMinutes + convertedSeconds);
+                else
+                    message = new TextComponent(ChatColor.GOLD.toString() +
+                            ChatColor.BOLD + convertedDays + ChatColor.GOLD + ChatColor.BOLD + convertedMinutes + convertedSeconds);
+            else if(hours > 0)
+                message = new TextComponent(ChatColor.GOLD.toString() +
+                        ChatColor.BOLD + convertedHours + ":" + convertedMinutes + convertedSeconds);
+            else
+                message = new TextComponent(ChatColor.GOLD.toString() +
+                        ChatColor.BOLD + convertedMinutes + convertedSeconds);
+        }
+        return message;
+    }
 
     private void run() {
         new BukkitRunnable() {
