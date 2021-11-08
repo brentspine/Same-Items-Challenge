@@ -1,6 +1,7 @@
 package de.brentspine.sameitems.commands;
 
 import de.brentspine.sameitems.Main;
+import de.brentspine.sameitems.listeners.PlayerObtainItemListener;
 import de.brentspine.sameitems.util.Timer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,6 +24,7 @@ public class TimerCommand implements CommandExecutor {
                             player.sendMessage(Main.NOPERM);
                             return true;
                         }
+                        PlayerObtainItemListener.reset();
                         Timer timer = Main.instance.getTimer();
 
                         if(timer.isRunning()) {
