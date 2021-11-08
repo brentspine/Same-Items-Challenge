@@ -8,14 +8,19 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.Hash;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,23 +32,58 @@ public class PlayerObtainItemListener implements Listener {
     public static HashMap<String, Integer> lives = new HashMap<>();
     public static HashMap<String, HashMap<String, Integer>> livesTookFrom = new HashMap<>();
 
+
+    @EventHandler
+    public void onItemCraft(CraftItemEvent event) {
+        handleObtainItem(event.getWhoClicked(), event.getCurrentItem().getType());
+    }
+
     @EventHandler
     public void onItemPickup(EntityPickupItemEvent event) {
+        handleObtainItem(event.getEntity(), event.getItem().getItemStack().getType());
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        ItemStack item = event.getCurrentItem();
+        if(event.getClickedInventory().getType() == InventoryType.PLAYER) {
+            return;
+        }
+        if(item.getType() == Material.AIR) {
+            return;
+        }
+        handleObtainItem(event.getWhoClicked(), item.getType());
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        ItemStack item = event.getCursor();
+        if(event.getInventory().getType() == InventoryType.PLAYER) {
+            return;
+        }
+        if(item.getType() == Material.AIR) {
+            return;
+        }
+        handleObtainItem(event.getWhoClicked(), item.getType());
+    }
+
+
+    public void handleObtainItem(Entity entity, Material material) {
         BossBarManager.run();
-        if(!(event.getEntity() instanceof Player)) {
+        if(!(entity instanceof Player)) {
             return;
         }
         if(!Main.instance.getTimer().isRunning()) {
             return;
         }
-        Player player = (Player) event.getEntity();
-        String damager = obtainedItems.get(event.getItem().getItemStack().getType());
-        if(obtainedItems.containsKey(event.getItem().getItemStack().getType())) {
-            if(obtainedItems.get(event.getItem().getItemStack().getType()) == player.getName()) {
+        Player player = (Player) entity;
+        String damager = obtainedItems.get(material);
+        if(obtainedItems.containsKey(material)) {
+            if(obtainedItems.get(material) == player.getName()) {
                 return;
             }
             player.sendMessage(damager);
-            player.sendMessage(Main.PREFIX + "Das Item §9" + event.getItem().getItemStack().getType() + "§7 wurde bereits eingesammelt von §9" + obtainedItems.get(event.getItem().getItemStack().getType()) + " §4§l(-♥)");
+            player.sendMessage(Main.PREFIX + "Das Item §9" + material + "§7 wurde bereits eingesammelt von §9" + obtainedItems.get(material) + " §4§l(-♥)");
             lives.put(player.getName(), lives.get(player.getName()) - 1);
 
             Integer oldValue;
@@ -71,12 +111,12 @@ public class PlayerObtainItemListener implements Listener {
                         lives.put(damager, livesTookFrom.get(player.getName()).get(damager) + lives.get(damager));
                     }
                     ArrayList<Material> arrayList = new ArrayList<>();
-                    for(Material material : obtainedItems.keySet()) {
-                        arrayList.add(material);
+                    for(Material current : obtainedItems.keySet()) {
+                        arrayList.add(current);
                     }
-                    for(Material material : arrayList) {
-                        if(obtainedItems.get(material) == player.getName()) {
-                            obtainedItems.remove(material);
+                    for(Material current : arrayList) {
+                        if(obtainedItems.get(current) == player.getName()) {
+                            obtainedItems.remove(current);
                         }
                     }
                     for(Player current : Bukkit.getOnlinePlayers()) {
@@ -87,8 +127,8 @@ public class PlayerObtainItemListener implements Listener {
             }
             return;
         }
-        obtainedItems.put(event.getItem().getItemStack().getType(), player.getName());
-        player.sendMessage(Main.PREFIX + "" + event.getItem().getItemStack().getType().name() + " §8(obtained)");
+        obtainedItems.put(material, player.getName());
+        player.sendMessage(Main.PREFIX + "" + material + " §8(obtained)");
     }
 
     public static void reset() {
