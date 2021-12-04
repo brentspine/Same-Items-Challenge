@@ -3,6 +3,7 @@
 Same Items Challenge wie bei BastiGHG: <br>
 https://www.youtube.com/watch?v=Jd8DQM5FZJA
 <br>
+[Lets go to Quora](https://www.quora.com)
 <br>
 <br>
 Download: 
